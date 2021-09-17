@@ -1,2 +1,2 @@
 # homestead
-informatic assistance for home gardening (and possibly part design)
+informatic assistance for home gardening (and surely part design)
