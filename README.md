@@ -2,4 +2,4 @@
 
 ## Presentation
 
-<kbd>Homestead</kbd> is a 
+Homestead is an informatic approach to assist in home gardening management.
