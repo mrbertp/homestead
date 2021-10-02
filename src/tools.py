@@ -113,21 +113,19 @@ def process_template(filename):
 
 def update_database(path):
 
-	if not os.path.exists(path + 'database.csv'):
+	with open(path + 'database.csv', 'w') as file:
 
-		with open(path + 'database.csv', 'w') as file:
+		file.write('CULTIVO')
+		file.write(',')
+		file.write('FECHA')
+		file.write(',')
 
-			file.write('CULTIVO')
-			file.write(',')
-			file.write('FECHA')
-			file.write(',')
+		for i in range(len(collective_names)):
+			file.write(collective_names[i])
+			if i != len(collective_names)-1:
+				file.write(',')
 
-			for i in range(len(collective_names)):
-				file.write(collective_names[i])
-				if i != len(collective_names)-1:
-					file.write(',')
-
-			file.write('\n')
+		file.write('\n')
 
 	files = os.listdir(path + 'templates/')
 
@@ -143,11 +141,9 @@ def update_database(path):
 		except:
 			print('\t' + 'Problem with:', file)
 
-#create_template(('cannabis',4,5))
+#create_template(('lettuce',3,4))
 
-#process_template('cannabis_2021-10-03_4x5.xlsx')
-
-#update_database('../dat/')
+update_database('../dat/')
 
 df = pd.read_csv('../dat/database.csv', sep=',')
 print(df)
