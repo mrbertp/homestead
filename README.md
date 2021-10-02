@@ -1,2 +1,5 @@
-# homestead
-informatic assistance for home gardening (and surely part design)
+# HOMESTEAD
+
+## Presentation
+
+<kbd>Homestead</kbd> is a 
