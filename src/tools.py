@@ -147,5 +147,3 @@ update_database('../dat/')
 
 df = pd.read_csv('../dat/database.csv', sep=',')
 print(df)
-
-# removed stowaway README.html file
