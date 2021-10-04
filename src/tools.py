@@ -9,6 +9,7 @@ import os
 
 fillable_names = ['CULTIVO', 'TAMAÑO', 'LOSA', 'GOLPE']
 fillable_units = ['cubos', 'cm2', 'semillas/cubo']
+individual_names = ['PROGENIE', 'FERTILIDAD', 'INVERSION', 'RENDIMIENTO', 'HABITAT']
 collective_names = ['SIEMBRA', 'PROGENIE', 'FERTILIDAD', 'INVERSION', 'AREA', 'DENSIDAD', 'OCUPACION', 'COLONIZACION', 'RENDIMIENTO', 'HABITAT']
 collective_units = ['semillas', 'plantas', 'plantas/semilla', 'semillas/planta', 'cm2', 'semillas/cm2', 'cm2/semilla', 'plantas/cubo', 'plantas/cm2', 'cm2/planta']
 
@@ -56,6 +57,7 @@ def process_template(filename):
 	name = filename.split('_')[0]
 	date = filename.split('_')[1]
 	nrow, ncol = list(map(int,filename.split('.')[0].split('_')[2].split('x')))
+	size = nrow * ncol
 
 	# read data
 	individual = {}
@@ -90,24 +92,22 @@ def process_template(filename):
 	collective['RENDIMIENTO'] = collective['PROGENIE'] / collective['AREA']
 	collective['HABITAT'] = collective['AREA'] / collective['PROGENIE']
 
-	# write data into database
-	with open('../dat/database.csv', 'a') as file:
-		
-		file.write(name)
-		file.write(',')
-		file.write(date)
-		file.write(',')
-		
-		for i in range(len(collective.values())):
-			file.write(str(np.around(list(collective.values())[i],2)))
-			if i != len(collective.values())-1:
-				file.write(',')
-
-		file.write('\n')
-
-	# write data into excel sheet
+	# write collective data into excel sheet
 	for row,value in zip(range(2,12),collective.values()):
 		ws[chr(ord('A')+(8+ncol)) + str(row)] = value
+
+	# write individual data into database
+	with open('../dat/database.csv', 'a') as file:
+		for i in range(size):
+			file.write(name)
+			file.write(',')
+			file.write(date)
+			file.write(',')
+			for j in range(len(individual.keys())):
+				file.write(str(np.around(individual[list(individual.keys())[j]][i], 2)))
+				if j != len(individual.keys())-1:
+					file.write(',')
+			file.write('\n')
 
 	wb.save('../dat/filled/' + filename)
 
@@ -120,9 +120,9 @@ def update_database(path):
 		file.write('FECHA')
 		file.write(',')
 
-		for i in range(len(collective_names)):
-			file.write(collective_names[i])
-			if i != len(collective_names)-1:
+		for i in range(len(individual_names)):
+			file.write(individual_names[i])
+			if i != len(individual_names)-1:
 				file.write(',')
 
 		file.write('\n')
@@ -135,15 +135,23 @@ def update_database(path):
 	files = os.listdir(path + 'filled/')
 
 	for file in files:
-		print('Processing:', file)
-		try:
-			process_template(file)
-		except:
-			print('\t' + 'Problem with:', file)
+		process_template(file)
 
-#create_template(('lettuce',3,4))
+
+#create_template(('poto',3,3))
 
 update_database('../dat/')
 
 df = pd.read_csv('../dat/database.csv', sep=',')
-print(df)
+'''
+df_cultivos = df.groupby(['CULTIVO'])
+print(df_cultivos.get_group('poto'))
+'''
+sns.set_theme()
+sns.set_style('ticks')
+sns.set_context('paper')
+sns.boxplot(data=df, x='CULTIVO', y='FERTILIDAD')
+sns.stripplot(data=df, x='CULTIVO', y='FERTILIDAD', color='black')
+sns.despine(top=True, right=True, offset=0, trim=False)
+
+plt.show()
